@@ -1,5 +1,7 @@
 package spec;
 
+import com.jogamp.opengl.GL2;
+
 /**
  * COMMENT: Comment Tree 
  *
@@ -20,5 +22,8 @@ public class Tree {
         return myPos;
     }
     
+    public void draw(GL2 gl){
+    	
+    }
 
 }
