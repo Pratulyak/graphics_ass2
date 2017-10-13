@@ -121,7 +121,8 @@ public class Terrain {
     public double altitude(double x, double z) {
         double altitude = 0;
 
-        
+        //Not sure what to do here... Is this one line it?
+        altitude = myAltitude[(int)Math.floor(x)][(int)Math.floor(z)];
         
         return altitude;
     }
