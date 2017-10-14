@@ -18,6 +18,10 @@ public class Terrain {
     private List<Tree> myTrees;
     private List<Road> myRoads;
     private float[] mySunlight;
+    
+    private double[][] vertices;
+    private List<Integer> faces;
+    private double[][] normals;
 
     /**
      * Create a new terrain
@@ -31,6 +35,10 @@ public class Terrain {
         myTrees = new ArrayList<Tree>();
         myRoads = new ArrayList<Road>();
         mySunlight = new float[3];
+        
+        vertices = getVertices(width, depth);
+        faces = new ArrayList<Integer>();
+        normals = new double[faces.size()][3];
     }
     
     public Terrain(Dimension size) {
@@ -51,6 +59,25 @@ public class Terrain {
 
     public float[] getSunlight() {
         return mySunlight;
+    }
+    
+    /**
+     * Create a list of vertices
+     */
+    public double[][] getVertices(int width, int depth) {
+    	double[][] vertexList = new double[width * depth][3];
+    	
+    	int i = 0;
+    	for (int z = 0; z < width; z++) {
+    		for (int x = 0; x < depth; x++) {
+    			vertexList[i][0] = x;
+    	    	vertexList[i][1] = getGridAltitude(x, z);
+    	    	vertexList[i][2] = z;
+    	    	i ++;
+    		}
+    	}
+    	
+    	return vertexList;
     }
 
     /**

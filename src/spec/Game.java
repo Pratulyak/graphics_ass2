@@ -106,6 +106,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
 		gl.glEnable(GL2.GL_NORMALIZE);
+		
+		//Maybe?
+		drawTerrain(gl);
 
 	}
 
@@ -139,5 +142,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void drawTerrain(GL2 gl) {
+		//Draw the terrain from here?
 	}
 }
