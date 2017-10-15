@@ -98,7 +98,8 @@ public class Terrain {
     	for (int i = 0; i < (vertexList.length - width); i++) {
     		
     		//Skip the last vertex of the width (Because it has no neighbors to the right)
-    		if (i % width == 0) {
+    		//Will this cover all cases?
+    		if (i % width == 0 && i != 0) {
     			continue;
     		}
     		
@@ -108,6 +109,25 @@ public class Terrain {
     		face.add(i);
     		face.add(i + width); //vertex[i+width] is the vertex below vertex[i]
     		face.add(i + 1); //vertex[i+1] is the vertex to the right of vertex[i]
+    		
+    		faceList.add(face);
+    	}
+    	
+    	//Iterate through every vertex, except the last depth (last z or row)
+    	//Iterating the list twice because two triangles will start at same vertex
+    	for (int i = 1; i < (vertexList.length - width); i++) {
+    		
+    		//SKip the first vertex of the width (Because it has no neighbors to the left)
+    		if (i % width == 1 && i != 1) {
+    			continue;
+    		}
+    		
+    		ArrayList<Integer> face = new ArrayList<>();
+    		
+    		//Add vertices in CCW order
+    		face.add(i);
+    		face.add(i + width - 1); //vertex[i+width-1] is the vertex below and to the left of vertex[i]
+    		face.add(i + width); //vertex[i+width] is the vertex below vertex[i]
     		
     		faceList.add(face);
     	}
