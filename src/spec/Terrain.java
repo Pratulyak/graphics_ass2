@@ -22,6 +22,7 @@ public class Terrain {
     private double[][] vertices;
     private List<List<Integer>> faces;
     private double[][] normals;
+    private double[][] normalizedNormals;
 
     /**
      * Create a new terrain
@@ -38,7 +39,8 @@ public class Terrain {
         
         vertices = getVertices(width, depth);
         faces = getFaceList(vertices, width);
-        normals = new double[faces.size()][3];
+        normals = getNormals(vertices, faces);
+        normalizedNormals = normalize(normals);
     }
     
     public Terrain(Dimension size) {
@@ -66,18 +68,19 @@ public class Terrain {
      * 
      * @param width
      * @param depth
+     * 
      * @return vertexList
      */
     public double[][] getVertices(int width, int depth) {
     	double[][] vertexList = new double[width * depth][3];
     	
-    	int i = 0;
-    	for (int z = 0; z < width; z++) {
-    		for (int x = 0; x < depth; x++) {
-    			vertexList[i][0] = x;
-    	    	vertexList[i][1] = getGridAltitude(x, z);
-    	    	vertexList[i][2] = z;
-    	    	i ++;
+    	int index = 0;
+    	for (int z = 0; z < depth; z++) {
+    		for (int x = 0; x < width; x++) {
+    			vertexList[index][0] = x;
+    	    	vertexList[index][1] = getGridAltitude(x, z);
+    	    	vertexList[index][2] = z;
+    	    	index ++;
     		}
     	}
     	
@@ -87,8 +90,9 @@ public class Terrain {
     /**
      * Return a list of all the faces in the terrain mesh
      * 
-     * @vertexList List of vertices
-     * @width Width of the mesh
+     * @param vertexList List of vertices
+     * @param width of the mesh
+     * 
      * @return faceList
      */
     public List<List<Integer>> getFaceList(double[][] vertexList, int width) {
@@ -132,6 +136,82 @@ public class Terrain {
     		faceList.add(face);
     	}
     	return faceList;
+    }
+    
+    /**
+     * Calculate and return list of normals for each face
+     * 
+     * @param vertexList
+     * @param faces
+     * 
+     * @return normalList
+     */
+    public double[][] getNormals(double[][] vertexList, List<List<Integer>> faces) {
+    	double[][] normalList = new double[faces.size()][3];
+    	
+    	int index = 0;
+    	for (List<Integer> face : faces) {
+			
+    		//Get the three vertices (the indexes) that makes the triangle of the face
+    		int p0 = face.get(0);
+    		int p1 = face.get(1);
+    		int p2 = face.get(2);
+    		
+    		//Get {x,y,z} coordinates from vertexList
+    		double[] V2 = vertexList[p2];
+    		double[] V1 = vertexList[p1];
+    		double[] V0 = vertexList[p0];
+    		
+    		//v1 = V3 - V1
+    		double[] v1 = {V2[0] - V0[0], V2[1] - V0[1], V2[2] - V0[2]};
+    		
+    		//v2 = p2 - p1
+    		double[] v2 = {V1[0] - V0[0], V1[1] - V0[1], V1[2] - V0[2]};
+    		
+    		//Cross product of v1 and v1
+    		double[] v1xv2 = {v1[1]*v2[2] - v1[2]*v2[1], 
+    				v1[2]*v2[0] - v1[0]*v2[2], 
+    				v1[0]*v2[1] - v1[1]*v2[0]};
+    		
+    		normalList[index] = v1xv2;
+    		index ++;
+    	}
+    	
+    	return normalList;
+    }
+    
+    /**
+     * Normalize normals
+     * 
+     * @param normals
+     * return normalizedNormals
+     */
+    public double[][] normalize(double[][] normals) {
+    	double[][] normalizedNormals = new double[normals.length][3];
+    	
+    	int index = 0;
+    	for (double[] normal : normals) {
+    		double magnitude = getMagnitude(normal);
+    		double norm[] = {normal[0]/magnitude ,normal[1]/magnitude, normal[2]/magnitude};
+    		
+    		normalizedNormals[index] = norm;
+    		index ++;
+    	}
+    	
+    	return normalizedNormals;
+    }
+    
+    /**
+     * Get the magnitude of normals
+     * 
+     * @param n
+     * @return mag
+     */
+    public double getMagnitude(double[] n) {
+    	double mag = n[0]*n[0] + n[1]*n[1] + n[2]*n[2];
+    	mag = Math.sqrt(mag);
+    	
+    	return mag;
     }
 
     /**
