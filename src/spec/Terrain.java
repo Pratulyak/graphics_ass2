@@ -20,7 +20,7 @@ public class Terrain {
     private float[] mySunlight;
     
     private double[][] vertices;
-    private List<Integer> faces;
+    private List<List<Integer>> faces;
     private double[][] normals;
 
     /**
@@ -37,7 +37,7 @@ public class Terrain {
         mySunlight = new float[3];
         
         vertices = getVertices(width, depth);
-        faces = new ArrayList<Integer>();
+        faces = getFaceList(vertices, width);
         normals = new double[faces.size()][3];
     }
     
@@ -62,7 +62,11 @@ public class Terrain {
     }
     
     /**
-     * Create a list of vertices
+     * Return a list of vertices
+     * 
+     * @param width
+     * @param depth
+     * @return vertexList
      */
     public double[][] getVertices(int width, int depth) {
     	double[][] vertexList = new double[width * depth][3];
@@ -78,6 +82,36 @@ public class Terrain {
     	}
     	
     	return vertexList;
+    }
+    
+    /**
+     * Return a list of all the faces in the terrain mesh
+     * 
+     * @vertexList List of vertices
+     * @width Width of the mesh
+     * @return faceList
+     */
+    public List<List<Integer>> getFaceList(double[][] vertexList, int width) {
+    	ArrayList<List<Integer>> faceList = new ArrayList<>();
+    	
+    	//Iterate through every vertex, except the last depth (last z or row)
+    	for (int i = 0; i < (vertexList.length - width); i++) {
+    		
+    		//Skip the last vertex of the width (Because it has no neighbors to the right)
+    		if (i % width == 0) {
+    			continue;
+    		}
+    		
+    		ArrayList<Integer> face = new ArrayList<>();
+    		
+    		//Add vertices in CCW order
+    		face.add(i);
+    		face.add(i + width); //vertex[i+width] is the vertex below vertex[i]
+    		face.add(i + 1); //vertex[i+1] is the vertex to the right of vertex[i]
+    		
+    		faceList.add(face);
+    	}
+    	return faceList;
     }
 
     /**
