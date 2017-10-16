@@ -20,6 +20,10 @@ import com.jogamp.opengl.util.gl2.GLUT;
 public class Game extends JFrame implements GLEventListener, KeyListener {
 
 	private Terrain myTerrain;
+	private final int NUM_TEXTURES = 1;
+	
+	private MyTexture myTextures[];
+	private int currIndex = 0; // Currently displayed texture index
 
 	public Game(Terrain terrain) {
 		super("Assignment 2");
@@ -82,6 +86,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
 		glut.glutSolidTeapot(1);
 		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
+		
+		//Set current texture
+		//gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[currIndex].getTextureId());
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[0].getTextureId());
+		
+		//Maybe?
+		myTerrain.drawTerrain(gl);
 
 	}
 
@@ -102,13 +113,17 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glEnable(GL2.GL_LIGHTING);
 		// turn on a light. Use default settings.
 		gl.glEnable(GL2.GL_LIGHT0);
+		
+		//Enable texturing (Maybe 3D instead?)
+		gl.glEnable(GL2.GL_TEXTURE_2D);
+		
+		//Load in textures from files
+    	myTextures = new MyTexture[NUM_TEXTURES];
+    	myTextures[0] = new MyTexture(gl,"src/spec/grass.png",true);
 
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
 		gl.glEnable(GL2.GL_NORMALIZE);
-		
-		//Maybe?
-		myTerrain.drawTerrain(gl);
 
 	}
 

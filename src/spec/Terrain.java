@@ -329,8 +329,13 @@ public class Terrain {
     			int p2 = face.get(2);
     			
     			gl.glNormal3d(normalizedNormals[p0][0], normalizedNormals[p0][1], normalizedNormals[p0][2]);
+    			
+    			//May have to calculate texCoord-values somehow... Or maybe not?
+    			gl.glTexCoord2d(0,1);
     			gl.glVertex3d(vertices[p0][0], vertices[p0][1], vertices[p0][2]);
+    			gl.glTexCoord2d(0,0);
     			gl.glVertex3d(vertices[p1][0], vertices[p1][1], vertices[p1][2]);
+    			gl.glTexCoord2d(1,1);
     			gl.glVertex3d(vertices[p2][0], vertices[p2][1], vertices[p2][2]);
     			
     		}
