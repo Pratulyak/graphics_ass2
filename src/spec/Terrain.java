@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jogamp.opengl.GL2;
+
 
 
 /**
@@ -312,6 +314,29 @@ public class Terrain {
         Road road = new Road(width, spine);
         myRoads.add(road);        
     }
-
+    
+    /**
+     * Draws the terrain
+     * @param gl
+     */
+    public void drawTerrain(GL2 gl) {
+		//Draw the terrain from here?
+    	gl.glBegin(GL2.GL_POLYGON);
+    	{
+    		for (List<Integer> face : faces) {
+    			int p0 = face.get(0);
+    			int p1 = face.get(1);
+    			int p2 = face.get(2);
+    			
+    			gl.glNormal3d(normalizedNormals[p0][0], normalizedNormals[p0][1], normalizedNormals[p0][2]);
+    			gl.glVertex3d(vertices[p0][0], vertices[p0][1], vertices[p0][2]);
+    			gl.glVertex3d(vertices[p1][0], vertices[p1][1], vertices[p1][2]);
+    			gl.glVertex3d(vertices[p2][0], vertices[p2][1], vertices[p2][2]);
+    			
+    		}
+    	}
+    	gl.glEnd();
+    	
+	}
 
 }
