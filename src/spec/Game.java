@@ -20,15 +20,18 @@ import com.jogamp.opengl.util.gl2.GLUT;
 public class Game extends JFrame implements GLEventListener, KeyListener {
 
 	private Terrain myTerrain;
-	private final int NUM_TEXTURES = 1;
 	
+	private final int NUM_TEXTURES = 1;
 	private MyTexture myTextures[];
-	private int currIndex = 0; // Currently displayed texture index
 	
 	//For rotation TESTING
 	private double Xangle = 0;
     private double Yangle = 0;
 	private double Zangle = 0;
+	
+	private double xMove = 0;
+    private double yMove = 0;
+	private double zMove = 0;
 
 	public Game(Terrain terrain) {
 		super("Assignment 2");
@@ -80,36 +83,62 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		
-		//gl.glTranslated(0, 0, -3);
-        // Commands to turn the cylinder.
+		//Turn off texture
+        gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+		
+		// Commands to turn the terrain.
         gl.glRotated(Zangle, 0.0, 0.0, 1.0);
         gl.glRotated(Yangle, 0.0, 1.0, 0.0);
         gl.glRotated(Xangle, 1.0, 0.0, 0.0);
-        //gl.glTranslated(0, 0, 3);
+        
+        //How much to scale down the teapot
+        double scale = 5;
+        
+        //Get the altitude of the terrain at the teapot's current location
+        //Because of scaling, the variables Xmove and zMove have to be divided
+        double altitude;
+        if (xMove >= 0 && zMove >= 0 && xMove/scale <= 9 && zMove/scale <= 9) {
+        	altitude = myTerrain.altitude(xMove/scale, zMove/scale);
+        } else {
+        	altitude = 0;
+        }
 		
-		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE); //***
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT); //***
-
-		// Forgetting to clear the depth buffer can cause problems
-		// such as empty black screens.
-		//gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-		// gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_LINE);
-		//gl.glColor3f(0, 1, 0);
-		//GLUT glut = new GLUT();
-		// Move teapot so it is not in the same
-		// pos as the default light and camera and so it is not clipped
-		// gl.glTranslated(0,0,-2);
-
-		//glut.glutSolidTeapot(1);
-		//gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        //Scale down for the teapot
+		gl.glScaled(1.0/scale, 1.0/scale, 1.0/scale);
 		
-		//Set current texture
-		//gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[currIndex].getTextureId());
+		//Camera that follows the teapot (3rd person view)
+		GLU glu = new GLU();
+		
+		//Set the position of the camera. Because of scaling, the altitude is multiplied
+		//gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
+		glu.gluLookAt(xMove-15, (10 + altitude*scale), zMove, xMove+5, altitude*scale, zMove, 0, 1, 0);
+        
+        //Set color to the teapot
+        float[] red = {1.0f, 0.0f, 0.0f, 1.0f};
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, red, 0);
+        float[] emi = {0.4f, 0.0f, 0.0f, 1.0f};
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emi, 0);
+        
+        //Move the coordinate system (aka move the teapot)
+		gl.glTranslated(xMove,1+altitude*scale,zMove);
+
+		//Draw the teapot
+		GLUT glut = new GLUT();
+		glut.glutSolidTeapot(1);
+		
+		//Reset the coordinate system after the teapot
+		gl.glTranslated(-xMove,-(1+altitude*scale),-zMove);
+		gl.glScaled(scale, scale, scale);
+		
+		//Set texture modes
+		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
+		
+		//Set grass texture
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[0].getTextureId());
 		
 		//Draw the terrain
 		myTerrain.drawTerrain(gl);
-		//gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
 	}
 
@@ -126,10 +155,23 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		// opengl will draw things in the order you
 		// draw them in your program
 		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
 		// enable lighting
 		gl.glEnable(GL2.GL_LIGHTING);
+		
 		// turn on a light. Use default settings.
 		gl.glEnable(GL2.GL_LIGHT0);
+		
+		//Position the light source (the sun). The last zero in 'dir' represent direction
+		float[] dir = {5, 10, 3, 0};
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, dir, 0);
+		
+		//Create ambient light (not pretty...)
+        float[] amb = {0.2f, 0.2f, 0.2f, 1.0f};
+        //gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, amb, 0);
+        
+        //float light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        //gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, light_ambient);
 		
 		//Enable texturing
 		gl.glEnable(GL2.GL_TEXTURE_2D);
@@ -149,25 +191,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		
-		/*
-		//glFrustum(Left, Right, Bottom, Top, Near, Far)
-		gl.glFrustum(-1.0, 4.0, -1.0, 3.0, 5.0, 100.0);
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity();
-        */
-
         
 	    double distNear = 0.01;
 	    double ar = ((double)width)/((double)height);
 	    distNear = 2;
 	    GLU glu = new GLU();
 	    glu.gluPerspective(60, ar, distNear, 100);
-	    
-	    //gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
-	    glu.gluLookAt(0, 5, -9, 5, 0, 5, 0, 1, 0);
-	    
-
 	}
 
 	@Override
@@ -181,23 +210,23 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		// TODO Auto-generated method stub
 		switch (ev.getKeyCode()) {
 		
+		case KeyEvent.VK_UP:
+			 xMove += 1.0;
+			 if (Xangle < 0.0) Xangle += 360.0;
+			 break;
+		
 		 case KeyEvent.VK_DOWN:
-			 Xangle += 5.0;
+			 xMove -= 1.0;
 			 if (Xangle > 360.0) Xangle -= 360.0;
 			 break;
 			 
-		 case KeyEvent.VK_UP:
-			 Xangle -= 5.0;
-			 if (Xangle < 0.0) Xangle += 360.0;
-			 break;
-			 
 		 case KeyEvent.VK_LEFT:
-			 Yangle -= 5.0;
+			 zMove -= 1.0;
 			 if (Yangle < 0.0) Yangle += 360.0;
 			 break;
 			 
 		 case KeyEvent.VK_RIGHT:
-			 Yangle += 5.0;
+			 zMove += 1.0;
 			 if (Yangle > 360.0) Yangle -= 360.0;
 			 break;
 			

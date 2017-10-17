@@ -292,10 +292,59 @@ public class Terrain {
      * @return
      */
     public double altitude(double x, double z) {
-        double altitude = 0;
+        double avgAlt = 0;
 
-        //Not sure what to do here... Is this one line it?
-        altitude = myAltitude[(int)Math.floor(x)][(int)Math.floor(z)];
+        //In case we have a double with .0
+        x += 0.01;
+        z += 0.01;
+        
+        int xMin = (int)Math.floor(x);
+        int xMax = (int)Math.ceil(x);
+        int zMin = (int)Math.floor(z);
+        int zMax = (int)Math.ceil(z);
+        
+        //The decimal number of the x and z values
+        double xDecimal = x - xMin;
+        double zDecimal = z - zMin;
+       
+        //Altitudes of each corner in the square(xFloor, xCeil, zFloor, zCeil)
+        double xMin_zMin_Altitude = myAltitude[xMin][zMin];
+        double xMax_zMax_Altitude = myAltitude[xMax][zMax];
+        double xMin_zMax_Altitude = myAltitude[xMin][zMax];
+        double xMax_zMin_Altitude = myAltitude[xMax][zMin];
+        
+        //Each square in the terrain is made up of two triangles. Therefore,
+        //we must find out which triangle the point is a part of
+        double[] p0 = new double[3];
+        double[] p1 = new double[3];
+        double[] p2 = new double[3];
+        
+        if (xDecimal + zDecimal <= 1.0) {
+        	String plan = "plan1";
+        	p0[0] = xMin; p0[1] = xMin_zMin_Altitude; p0[2] = zMin;
+        	p1[0] = xMax; p1[1] = xMax_zMin_Altitude; p1[2] = zMin;
+        	p2[0] = xMin; p2[1] = xMin_zMax_Altitude; p2[2] = zMax;
+        } else {
+        	String plan = "plan2";
+        	p0[0] = xMax; p0[1] = xMax_zMin_Altitude; p0[2] = zMin;
+        	p1[0] = xMax; p1[1] = xMax_zMax_Altitude; p1[2] = zMax;
+        	p2[0] = xMin; p2[1] = xMin_zMax_Altitude; p2[2] = zMax;
+        }
+        
+        //Construct two vectors from the three points
+        double[] v1 = {p0[0] - p1[0], p0[1] - p1[1], p0[2] - p1[2]};
+        double[] v2 = {p0[0] - p2[0], p0[1] - p2[1], p0[2] - p2[2]};
+        
+        //Cross product v1xv2 = (r,s,t)
+        double[] v1xv2 = {v1[1]*v2[2] - v1[2]*v2[1], 
+				v1[2]*v2[0] - v1[0]*v2[2], 
+				v1[0]*v2[1] - v1[1]*v2[0]};
+        
+        //The triangle pane has the equation k = rx + sy + tz
+        
+        //Then y = (1/s)(r*p0[0] + s*p0[1] + t*p0[2] - rx - tz)
+        double altitude = (1/v1xv2[1])*(v1xv2[0]*p0[0] + v1xv2[1]*p0[1] + v1xv2[2]*p0[2] 
+        		- v1xv2[0]*x - v1xv2[2]*z);
         
         return altitude;
     }
