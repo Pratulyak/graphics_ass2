@@ -292,7 +292,6 @@ public class Terrain {
      * @return
      */
     public double altitude(double x, double z) {
-        double avgAlt = 0;
 
         //In case we have a double with .0
         x += 0.01;
@@ -320,12 +319,12 @@ public class Terrain {
         double[] p2 = new double[3];
         
         if (xDecimal + zDecimal <= 1.0) {
-        	String plan = "plan1";
+        	//Triangle (or plan) 1
         	p0[0] = xMin; p0[1] = xMin_zMin_Altitude; p0[2] = zMin;
         	p1[0] = xMax; p1[1] = xMax_zMin_Altitude; p1[2] = zMin;
         	p2[0] = xMin; p2[1] = xMin_zMax_Altitude; p2[2] = zMax;
         } else {
-        	String plan = "plan2";
+        	//Triangle (or plan) 2
         	p0[0] = xMax; p0[1] = xMax_zMin_Altitude; p0[2] = zMin;
         	p1[0] = xMax; p1[1] = xMax_zMax_Altitude; p1[2] = zMax;
         	p2[0] = xMin; p2[1] = xMin_zMax_Altitude; p2[2] = zMax;
