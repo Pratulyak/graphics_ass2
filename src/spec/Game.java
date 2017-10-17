@@ -127,9 +127,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		// draw them in your program
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		// enable lighting
-		//gl.glEnable(GL2.GL_LIGHTING);***
+		gl.glEnable(GL2.GL_LIGHTING);
 		// turn on a light. Use default settings.
-		//gl.glEnable(GL2.GL_LIGHT0);***
+		gl.glEnable(GL2.GL_LIGHT0);
 		
 		//Enable texturing
 		gl.glEnable(GL2.GL_TEXTURE_2D);
