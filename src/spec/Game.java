@@ -216,22 +216,18 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
 		case KeyEvent.VK_UP:
 			 xMove += 1.0;
-			 if (Xangle < 0.0) Xangle += 360.0;
 			 break;
 		
 		 case KeyEvent.VK_DOWN:
 			 xMove -= 1.0;
-			 if (Xangle > 360.0) Xangle -= 360.0;
 			 break;
 			 
 		 case KeyEvent.VK_LEFT:
 			 zMove -= 1.0;
-			 if (Yangle < 0.0) Yangle += 360.0;
 			 break;
 			 
 		 case KeyEvent.VK_RIGHT:
 			 zMove += 1.0;
-			 if (Yangle > 360.0) Yangle -= 360.0;
 			 break;
 			
 		 case KeyEvent.VK_Z:
