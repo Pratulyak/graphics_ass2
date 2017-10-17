@@ -76,6 +76,7 @@ public class LevelIO {
                 terrain.addRoad(w, spine);
             }
         }
+        terrain.calculateVertices(width, depth);
         return terrain;
     }
 

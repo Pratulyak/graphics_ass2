@@ -1,5 +1,9 @@
 package spec;
 
+/**
+ * This class is copied from week8 code snippets in COMP3241
+ */
+
 
 import java.awt.image.BufferedImage;
 import java.io.File;

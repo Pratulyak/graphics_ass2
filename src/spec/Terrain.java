@@ -39,14 +39,23 @@ public class Terrain {
         myRoads = new ArrayList<Road>();
         mySunlight = new float[3];
         
-        vertices = getVertices(width, depth);
-        faces = getFaceList(vertices, width);
-        normals = getNormals(vertices, faces);
-        normalizedNormals = normalize(normals);
     }
     
     public Terrain(Dimension size) {
         this(size.width, size.height);
+    }
+    
+    /**
+     * Calculate the vertices, faces, and normals for the terrain
+     * @param width
+     * @param depth
+     */
+    public void calculateVertices(int width, int depth){
+    	vertices = getVertices(width, depth);
+        faces = getFaceList(vertices, width);
+        normals = getNormals(vertices, faces);
+        normalizedNormals = normalize(normals);
+    	
     }
 
     public Dimension size() {
@@ -104,8 +113,8 @@ public class Terrain {
     	for (int i = 0; i < (vertexList.length - width); i++) {
     		
     		//Skip the last vertex of the width (Because it has no neighbors to the right)
-    		//Will this cover all cases?
-    		if (i % width == 0 && i != 0) {
+    		//Want to skip 9, 19, 29, 39, ... osv
+    		if (i % width == 9 && i != 0) {
     			continue;
     		}
     		
@@ -123,8 +132,9 @@ public class Terrain {
     	//Iterating the list twice because two triangles will start at same vertex
     	for (int i = 1; i < (vertexList.length - width); i++) {
     		
-    		//SKip the first vertex of the width (Because it has no neighbors to the left)
-    		if (i % width == 1 && i != 1) {
+    		//Skip the first vertex of the width (Because it has no neighbors to the left)
+    		//Want to skip 0, 10, 20, 30, 40, ... osv
+    		if (i % width == 0) {
     			continue;
     		}
     		
@@ -321,8 +331,12 @@ public class Terrain {
      */
     public void drawTerrain(GL2 gl) {
 		//Draw the terrain from here?
-    	gl.glBegin(GL2.GL_POLYGON);
+    	gl.glBegin(GL2.GL_TRIANGLES);
     	{
+    		//Because every other triangle is inverted, we have to invert texture coords
+    		boolean invert = false;
+    		
+    		//Each face contains the three points making the triangle
     		for (List<Integer> face : faces) {
     			int p0 = face.get(0);
     			int p1 = face.get(1);
@@ -330,14 +344,28 @@ public class Terrain {
     			
     			gl.glNormal3d(normalizedNormals[p0][0], normalizedNormals[p0][1], normalizedNormals[p0][2]);
     			
-    			//May have to calculate texCoord-values somehow... Or maybe not?
-    			gl.glTexCoord2d(0,1);
+    			if (!invert) {
+    				gl.glTexCoord2d(0,1);
+    			} else {
+    				gl.glTexCoord2d(1,1);
+    			}
     			gl.glVertex3d(vertices[p0][0], vertices[p0][1], vertices[p0][2]);
-    			gl.glTexCoord2d(0,0);
+    			
+    			if (!invert) {
+    				gl.glTexCoord2d(0,0);
+    			} else {
+    				gl.glTexCoord2d(0,0);
+    			}
     			gl.glVertex3d(vertices[p1][0], vertices[p1][1], vertices[p1][2]);
-    			gl.glTexCoord2d(1,1);
+    			
+    			if (!invert) {
+    				gl.glTexCoord2d(1,1);
+    			} else {
+    				gl.glTexCoord2d(1,0);
+    			}
     			gl.glVertex3d(vertices[p2][0], vertices[p2][1], vertices[p2][2]);
     			
+    			invert = !invert;
     		}
     	}
     	gl.glEnd();
