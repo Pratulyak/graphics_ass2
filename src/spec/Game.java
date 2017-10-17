@@ -102,7 +102,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         //Have to check that the teapot is inside the terrain
         //Because of scaling, the variables xMove and zMove have to be divided
         if (xMove >= 0 && zMove >= 0 && xMove/scale < (width-1) && zMove/scale < (height-1)) {
-        	System.out.println(xMove + " " + zMove);
         	altitude = myTerrain.altitude(xMove/scale, zMove/scale);
         } else {
         	altitude = 0;
