@@ -23,6 +23,18 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	
 	private double teapotScale;
 	
+	//Colors
+	float[] colorRed = {1.0f, 0.0f, 0.0f, 1.0f};
+	float[] colorGreen = {0.0f, 1.0f, 0.0f, 1.0f};
+	float[] colorBlue = {0.0f, 0.0f, 1.0f, 1.0f};
+	float[] colorOrange = {1.0f, 0.7f, 1.0f, 1.0f};
+	
+	//Emission
+	float[] emissionRed = {0.4f, 0.0f, 0.0f, 1.0f};
+	float[] emissionGreen = {0.0f, 0.4f, 0.0f, 1.0f};
+	float[] emissionBlue = {0.0f, 0.0f, 0.4f, 1.0f};
+	float[] emissionOrange = {0.7f, 0.3f, 0.0f, 1.0f};
+	
 	private final int NUM_TEXTURES = 1;
 	private MyTexture myTextures[];
 	
@@ -31,10 +43,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private double Yangle = 0;
 	private double Zangle = 0;
 	
-	//For movement
-	private double xPos = 0;
+	//Random starting position
+	private double xPos = 8;
     private double yPos = 0;
-	private double zPos = 0;
+	private double zPos = 8;
 	
 	private boolean thirdPersonView = true;
 	
@@ -45,6 +57,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private double centerX = 0;
 	private double centerY = 0;
 	private double centerZ = 0;
+	
+	//Portal positions
+	int portal1X = 0;
+	int portal1Z = 0;
+	int portal2X = 0;
+	int portal2Z = 0;
 
 	public Game(Terrain terrain) {
 		super("Assignment 2");
@@ -125,7 +143,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			eyeX = xPos;
 			eyeY = 2+altitude*teapotScale;
 			eyeZ = zPos;
-			centerX = xPos+5;
+			centerX = xPos+8;
 			centerY = altitude*teapotScale;
 			centerZ = zPos;
 		}
@@ -153,12 +171,19 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glTranslated(-xPos,-(1+altitude*teapotScale),-zPos);
 		gl.glScaled(teapotScale, teapotScale, teapotScale);
 		
-		//Draw a portal
-		int portalX = 7;
-		int portalZ = 7;
-		double portalY = myTerrain.getGridAltitude(portalX, portalZ);
-		int portalHeight = 1;
-		drawPortal(gl, portalX, portalY, portalZ, portalHeight);
+		//Draw portal 1
+		portal1X = 3;
+		portal1Z = 7;
+		double portal1Y = myTerrain.getGridAltitude(portal1X, portal1Z);
+		int portal1Height = 1;
+		drawPortal(gl, portal1X, portal1Y, portal1Z, portal1Height, colorBlue, emissionBlue);
+		
+		//Draw portal 2
+		portal2X = 6;
+		portal2Z = 1;
+		double portal2Y = myTerrain.getGridAltitude(portal2X, portal2Z);
+		int portal2Height = 1;
+		drawPortal(gl, portal2X, portal2Y, portal2Z, portal2Height, colorOrange, emissionOrange);
 		
 		//Set texture modes
 		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
@@ -256,10 +281,25 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				xPos += Math.cos(yRad);
 				zPos += Math.sin(yRad);
 				
-				if (xPos/teapotScale >= 7 && zPos/teapotScale >= 7
-						&& xPos/teapotScale <= 8 && zPos/teapotScale <= 8) {
-					xPos = 0;
-					zPos = 0;
+				//If avatar goes through portal 1, change location to portal 2
+				if (xPos/teapotScale >= portal1X && zPos/teapotScale >= portal1Z
+						&& xPos/teapotScale <= portal1X+0.3 && zPos/teapotScale <= portal1Z+1) {
+					
+					//Set new xPos to be xPos of portal + a few steps to avoid loop. The math is
+					//there to get the correct direction when going out of the portal
+					xPos = (portal2X*teapotScale)+(Math.cos(yRad)*2);
+					
+					//Set new zPos to be zPos of portal + 1/2 square to spawn in the middle
+					//of the other portal
+					zPos = (portal2Z*teapotScale)+(0.5*teapotScale);
+				}
+				
+				//If avatar goes through portal 2, change location to portal 1
+				if (xPos/teapotScale >= portal2X && zPos/teapotScale >= portal2Z
+						&& xPos/teapotScale <= portal2X+0.3 && zPos/teapotScale <= portal2Z+1) {
+					
+					xPos = (portal1X*teapotScale)+(Math.cos(yRad)*2);
+					zPos = (portal1Z*teapotScale)+(0.5*teapotScale);
 				}
 			}
 			 break;
@@ -274,10 +314,20 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				 xPos -= Math.cos(yRad);
 				 zPos -= Math.sin(yRad);
 				 
-				 if (xPos/teapotScale >= 7 && zPos/teapotScale >= 7
-						 && xPos/teapotScale <= 8 && zPos/teapotScale <= 8) {
-						xPos = 0;
-						zPos = 0;
+				//If avatar goes through portal 1, change location to portal 2
+				 if (xPos/teapotScale >= portal1X && zPos/teapotScale >= portal1Z
+							&& xPos/teapotScale <= portal1X+0.3 && zPos/teapotScale <= portal1Z+1) {
+					 
+						xPos = (portal2X*teapotScale)-(Math.cos(yRad)*2);
+						zPos = (portal2Z*teapotScale)+(0.5*teapotScale);
+					}
+					
+				//If avatar goes through portal 2, change location to portal 1
+					if (xPos/teapotScale >= portal2X && zPos/teapotScale >= portal2Z
+							&& xPos/teapotScale <= portal2X+0.3 && zPos/teapotScale <= portal2Z+1) {
+						
+						xPos = (portal1X*teapotScale)-(Math.cos(yRad)*2);
+						zPos = (portal1Z*teapotScale)+(0.5*teapotScale);
 					}
 			 }
 			 break;
@@ -327,13 +377,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	 * @param z The starting z-position of the portal
 	 * @param height Height of the portal
 	 */
-	public void drawPortal(GL2 gl, int x, double y, int z, int height){
+	public void drawPortal(GL2 gl, int x, double y, int z, int height, float[] color, float[] emission){
 		
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-		float[] blue = {0.0f, 0.0f, 1.0f, 1.0f};
-        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, blue, 0);
-        float[] emiBlue = {0.0f, 0.0f, 0.4f, 1.0f};
-        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emiBlue, 0);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, color, 0);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emission, 0);
 		
         //Draw Portal Cube
 		gl.glBegin(GL2.GL_QUADS);
@@ -341,20 +389,20 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			//Bottom
 			gl.glVertex3d(x, 0, z);
 			gl.glVertex3d(x, 0, z+1);
-			gl.glVertex3d(x+1, 0, z+1);
-			gl.glVertex3d(x+1, 0, z);
+			gl.glVertex3d(x+0.1, 0, z+1);
+			gl.glVertex3d(x+0.1, 0, z);
 			
 			//Top
 			gl.glVertex3d(x, y+height, z);
 			gl.glVertex3d(x, y+height, z+1);
-			gl.glVertex3d(x+1, y+height, z+1);
-			gl.glVertex3d(x+1, y+height, z);
+			gl.glVertex3d(x+0.1, y+height, z+1);
+			gl.glVertex3d(x+0.1, y+height, z);
 			
 			//North
-			gl.glVertex3d(x+1, 0, z);
-			gl.glVertex3d(x+1, y+height, z);
-			gl.glVertex3d(x+1, y+height, z+1);
-			gl.glVertex3d(x+1, 0, z+1);
+			gl.glVertex3d(x+0.1, 0, z);
+			gl.glVertex3d(x+0.1, y+height, z);
+			gl.glVertex3d(x+0.1, y+height, z+1);
+			gl.glVertex3d(x+0.1, 0, z+1);
 			
 			//South
 			gl.glVertex3d(x, 0, z);
@@ -365,13 +413,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			//West
 			gl.glVertex3d(x, 0, z);
 			gl.glVertex3d(x, y+height, z);
-			gl.glVertex3d(x+1, y+height, z);
-			gl.glVertex3d(x+1, 0, z);
+			gl.glVertex3d(x+0.1, y+height, z);
+			gl.glVertex3d(x+0.1, 0, z);
 			
 			//East
 			gl.glVertex3d(x, 0, z+1);
-			gl.glVertex3d(x+1, 0, z+1);
-			gl.glVertex3d(x+1, y+height, z+1);
+			gl.glVertex3d(x+0.1, 0, z+1);
+			gl.glVertex3d(x+0.1, y+height, z+1);
 			gl.glVertex3d(x, y+height, z+1);
 		}
 		gl.glEnd();
