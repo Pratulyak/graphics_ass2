@@ -100,9 +100,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 		
 		// Commands to turn the terrain.
-        gl.glRotated(Zangle, 0.0, 0.0, 1.0);
-        gl.glRotated(Yangle, 0.0, 1.0, 0.0);
-        gl.glRotated(Xangle, 1.0, 0.0, 0.0);
+        //gl.glRotated(Zangle, 0.0, 0.0, 1.0);
+        //gl.glRotated(Yangle, 0.0, 1.0, 0.0);
+        //gl.glRotated(Xangle, 1.0, 0.0, 0.0);
         
         //How much to scale down the teapot
         teapotScale = 5;
@@ -146,10 +146,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         
         //Move the coordinate system (aka move the teapot)
 		gl.glTranslated(xPos, 1+altitude*teapotScale, zPos);
-
+		
 		//Draw the teapot
 		GLUT glut = new GLUT();
 		glut.glutSolidTeapot(1);
+		
+		//Rotate around the y-axis
+		gl.glRotated(Yangle, 0.0, 1.0, 0.0);
 		
 		//Reset the coordinate system after the teapot
 		gl.glTranslated(-xPos,-(1+altitude*teapotScale),-zPos);
@@ -237,31 +240,42 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		int height = myTerrain.size().height;
 		double xTemp = xPos;
 		double zTemp = zPos;
+		double yRad = Math.toRadians(Yangle);
 		
 		switch (ev.getKeyCode()) {
 		
 		case KeyEvent.VK_UP:
-			if ((xTemp += 1.0)/teapotScale < width-1) {
-				xPos += 1.0;
+			//Have to check that the movement still keeps the avatar within the terrain
+			if (((xTemp += Math.cos(yRad))/teapotScale < width-1) 
+					&& ((zTemp += Math.sin(yRad))/teapotScale < height-1)
+					&& ((xTemp += Math.cos(yRad))/teapotScale >= 0) 
+					&& ((zTemp += Math.sin(yRad))/teapotScale >= 0)) {
+				
+				xPos += Math.cos(yRad);
+				zPos += Math.sin(yRad);
 			}
 			 break;
 		
 		 case KeyEvent.VK_DOWN:
-			 if ((xTemp -= 1.0)/teapotScale >= 0) {
-				 xPos -= 1.0;
+			//Have to check that the movement still keeps the avatar within the terrain
+			 if ( ((xTemp -= Math.cos(yRad))/teapotScale < width-1) 
+					 && ((zTemp -= Math.sin(yRad))/teapotScale < height-1) 
+					 && ((xTemp -= Math.cos(yRad))/teapotScale >= 0) 
+					 && ((zTemp -= Math.sin(yRad))/teapotScale >= 0) ) {
+				 
+				 xPos -= Math.cos(yRad);
+				 zPos -= Math.sin(yRad);
 			 }
 			 break;
 			 
 		 case KeyEvent.VK_LEFT:
-			 if ((zTemp -= 1.0)/teapotScale >= 0) {
-				 zPos -= 1.0;
-			 }
+			 Yangle -= 10.0;
+			 if (Yangle < 0.0) Yangle += 360.0;
 			 break;
 			 
 		 case KeyEvent.VK_RIGHT:
-			 if ((zTemp += 1.0)/teapotScale < height-1) {
-				 zPos += 1.0;
-			 }
+			 Yangle += 10.0;
+			 if (Yangle > 360.0) Yangle -= 360.0;
 			 break;
 			 
 			 //Press V to change from 1st to 3rd person view
@@ -270,7 +284,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			 break;
 			
 		 case KeyEvent.VK_Z:
-			 Zangle -= 5.0;
+			 Zangle -= 10.0;
 			 if (Zangle < 0.0) Zangle += 360.0;
 			 break;
 			 
