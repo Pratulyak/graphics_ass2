@@ -26,14 +26,25 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private final int NUM_TEXTURES = 1;
 	private MyTexture myTextures[];
 	
-	//For rotation TESTING
+	//For rotation
 	private double Xangle = 0;
     private double Yangle = 0;
 	private double Zangle = 0;
 	
-	private double xMove = 0;
-    private double yMove = 0;
-	private double zMove = 0;
+	//For movement
+	private double xPos = 0;
+    private double yPos = 0;
+	private double zPos = 0;
+	
+	private boolean thirdPersonView = true;
+	
+	//Variables for the camera view
+	private double eyeX = 0;
+	private double eyeY = 0;
+	private double eyeZ = 0;
+	private double centerX = 0;
+	private double centerY = 0;
+	private double centerZ = 0;
 
 	public Game(Terrain terrain) {
 		super("Assignment 2");
@@ -96,18 +107,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         //How much to scale down the teapot
         teapotScale = 5;
        
-        double altitude;
-        double width = myTerrain.size().getWidth();
-        double height = myTerrain.size().getHeight();
-        
         //Get the altitude of the terrain at the teapot's current location
-        //Have to check that the teapot is inside the terrain
         //Because of scaling, the variables xMove and zMove have to be divided
-        if (xMove >= 0 && zMove >= 0 && xMove/teapotScale < (width-1) && zMove/teapotScale < (height-1)) {
-        	altitude = myTerrain.altitude(xMove/teapotScale, zMove/teapotScale);
-        } else {
-        	altitude = 0;
-        }
+        double altitude;
+        altitude = myTerrain.altitude(xPos/teapotScale, zPos/teapotScale);
 		
         //Scale down for the teapot
 		gl.glScaled(1.0/teapotScale, 1.0/teapotScale, 1.0/teapotScale);
@@ -115,9 +118,25 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		//Camera that follows the teapot (3rd person view)
 		GLU glu = new GLU();
 		
-		//Set the position of the camera. Because of scaling, the altitude is multiplied
+		//Setting camera coordinates according to the view mode
+		if (thirdPersonView) {
+			eyeX = xPos-15;
+			eyeY = (10 + altitude*teapotScale);
+			eyeZ = zPos;
+			centerX = xPos+5;
+			centerY = altitude*teapotScale;
+			centerZ = zPos;
+		} else {
+			eyeX = xPos;
+			eyeY = 2+altitude*teapotScale;
+			eyeZ = zPos;
+			centerX = xPos+5;
+			centerY = altitude*teapotScale;
+			centerZ = zPos;
+		}
+		
 		//gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
-		glu.gluLookAt(xMove-15, (10 + altitude*teapotScale), zMove, xMove+5, altitude*teapotScale, zMove, 0, 1, 0);
+		glu.gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
         
         //Set color to the teapot
         float[] red = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -126,14 +145,14 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emi, 0);
         
         //Move the coordinate system (aka move the teapot)
-		gl.glTranslated(xMove,1+altitude*teapotScale,zMove);
+		gl.glTranslated(xPos, 1+altitude*teapotScale, zPos);
 
 		//Draw the teapot
 		GLUT glut = new GLUT();
 		glut.glutSolidTeapot(1);
 		
 		//Reset the coordinate system after the teapot
-		gl.glTranslated(-xMove,-(1+altitude*teapotScale),-zMove);
+		gl.glTranslated(-xPos,-(1+altitude*teapotScale),-zPos);
 		gl.glScaled(teapotScale, teapotScale, teapotScale);
 		
 		//Set texture modes
@@ -200,7 +219,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         
 	    double distNear = 0.01;
 	    double ar = ((double)width)/((double)height);
-	    distNear = 2;
 	    GLU glu = new GLU();
 	    glu.gluPerspective(60, ar, distNear, 100);
 	}
@@ -217,33 +235,38 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
 		int width = myTerrain.size().width;
 		int height = myTerrain.size().height;
-		double xPos = xMove;
-		double zPos = zMove;
+		double xTemp = xPos;
+		double zTemp = zPos;
 		
 		switch (ev.getKeyCode()) {
 		
 		case KeyEvent.VK_UP:
-			if ((xPos += 1.0)/teapotScale < width-1) {
-				xMove += 1.0;
+			if ((xTemp += 1.0)/teapotScale < width-1) {
+				xPos += 1.0;
 			}
 			 break;
 		
 		 case KeyEvent.VK_DOWN:
-			 if ((xPos -= 1.0)/teapotScale >= 0) {
-				 xMove -= 1.0;
+			 if ((xTemp -= 1.0)/teapotScale >= 0) {
+				 xPos -= 1.0;
 			 }
 			 break;
 			 
 		 case KeyEvent.VK_LEFT:
-			 if ((zPos -= 1.0)/teapotScale >= 0) {
-				 zMove -= 1.0;
+			 if ((zTemp -= 1.0)/teapotScale >= 0) {
+				 zPos -= 1.0;
 			 }
 			 break;
 			 
 		 case KeyEvent.VK_RIGHT:
-			 if ((zPos += 1.0)/teapotScale < height-1) {
-				 zMove += 1.0;
+			 if ((zTemp += 1.0)/teapotScale < height-1) {
+				 zPos += 1.0;
 			 }
+			 break;
+			 
+			 //Press V to change from 1st to 3rd person view
+		 case KeyEvent.VK_V:
+			 thirdPersonView = !thirdPersonView;
 			 break;
 			
 		 case KeyEvent.VK_Z:
