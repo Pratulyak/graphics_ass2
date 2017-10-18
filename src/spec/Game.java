@@ -21,6 +21,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
 	private Terrain myTerrain;
 	
+	private double teapotScale;
+	
 	private final int NUM_TEXTURES = 1;
 	private MyTexture myTextures[];
 	
@@ -92,7 +94,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glRotated(Xangle, 1.0, 0.0, 0.0);
         
         //How much to scale down the teapot
-        double scale = 5;
+        teapotScale = 5;
        
         double altitude;
         double width = myTerrain.size().getWidth();
@@ -101,21 +103,21 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         //Get the altitude of the terrain at the teapot's current location
         //Have to check that the teapot is inside the terrain
         //Because of scaling, the variables xMove and zMove have to be divided
-        if (xMove >= 0 && zMove >= 0 && xMove/scale < (width-1) && zMove/scale < (height-1)) {
-        	altitude = myTerrain.altitude(xMove/scale, zMove/scale);
+        if (xMove >= 0 && zMove >= 0 && xMove/teapotScale < (width-1) && zMove/teapotScale < (height-1)) {
+        	altitude = myTerrain.altitude(xMove/teapotScale, zMove/teapotScale);
         } else {
         	altitude = 0;
         }
 		
         //Scale down for the teapot
-		gl.glScaled(1.0/scale, 1.0/scale, 1.0/scale);
+		gl.glScaled(1.0/teapotScale, 1.0/teapotScale, 1.0/teapotScale);
 		
 		//Camera that follows the teapot (3rd person view)
 		GLU glu = new GLU();
 		
 		//Set the position of the camera. Because of scaling, the altitude is multiplied
 		//gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
-		glu.gluLookAt(xMove-15, (10 + altitude*scale), zMove, xMove+5, altitude*scale, zMove, 0, 1, 0);
+		glu.gluLookAt(xMove-15, (10 + altitude*teapotScale), zMove, xMove+5, altitude*teapotScale, zMove, 0, 1, 0);
         
         //Set color to the teapot
         float[] red = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -124,15 +126,15 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emi, 0);
         
         //Move the coordinate system (aka move the teapot)
-		gl.glTranslated(xMove,1+altitude*scale,zMove);
+		gl.glTranslated(xMove,1+altitude*teapotScale,zMove);
 
 		//Draw the teapot
 		GLUT glut = new GLUT();
 		glut.glutSolidTeapot(1);
 		
 		//Reset the coordinate system after the teapot
-		gl.glTranslated(-xMove,-(1+altitude*scale),-zMove);
-		gl.glScaled(scale, scale, scale);
+		gl.glTranslated(-xMove,-(1+altitude*teapotScale),-zMove);
+		gl.glScaled(teapotScale, teapotScale, teapotScale);
 		
 		//Set texture modes
 		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
@@ -212,22 +214,36 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent ev) {
 		// TODO Auto-generated method stub
+		
+		int width = myTerrain.size().width;
+		int height = myTerrain.size().height;
+		double xPos = xMove;
+		double zPos = zMove;
+		
 		switch (ev.getKeyCode()) {
 		
 		case KeyEvent.VK_UP:
-			 xMove += 1.0;
+			if ((xPos += 1.0)/teapotScale < width-1) {
+				xMove += 1.0;
+			}
 			 break;
 		
 		 case KeyEvent.VK_DOWN:
-			 xMove -= 1.0;
+			 if ((xPos -= 1.0)/teapotScale >= 0) {
+				 xMove -= 1.0;
+			 }
 			 break;
 			 
 		 case KeyEvent.VK_LEFT:
-			 zMove -= 1.0;
+			 if ((zPos -= 1.0)/teapotScale >= 0) {
+				 zMove -= 1.0;
+			 }
 			 break;
 			 
 		 case KeyEvent.VK_RIGHT:
-			 zMove += 1.0;
+			 if ((zPos += 1.0)/teapotScale < height-1) {
+				 zMove += 1.0;
+			 }
 			 break;
 			
 		 case KeyEvent.VK_Z:
