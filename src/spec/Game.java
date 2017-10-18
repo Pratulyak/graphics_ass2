@@ -98,11 +98,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
 		//Turn off texture
         gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-		
-		// Commands to turn the terrain.
-        //gl.glRotated(Zangle, 0.0, 0.0, 1.0);
-        //gl.glRotated(Yangle, 0.0, 1.0, 0.0);
-        //gl.glRotated(Xangle, 1.0, 0.0, 0.0);
         
         //How much to scale down the teapot
         teapotScale = 5;
@@ -157,6 +152,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		//Reset the coordinate system after the teapot
 		gl.glTranslated(-xPos,-(1+altitude*teapotScale),-zPos);
 		gl.glScaled(teapotScale, teapotScale, teapotScale);
+		
+		//Draw a teleporter
+		int teleX = 7;
+		int teleZ = 7;
+		double teleY = myTerrain.getGridAltitude(teleX, teleZ);
+		int teleHeight = 1;
+		drawTeleport(gl, teleX, teleY, teleZ, teleHeight);
 		
 		//Set texture modes
 		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
@@ -253,6 +255,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				
 				xPos += Math.cos(yRad);
 				zPos += Math.sin(yRad);
+				
+				if (xPos/teapotScale >= 7 && zPos/teapotScale >= 7
+						&& xPos/teapotScale <= 8 && zPos/teapotScale <= 8) {
+					xPos = 0;
+					zPos = 0;
+				}
 			}
 			 break;
 		
@@ -265,6 +273,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				 
 				 xPos -= Math.cos(yRad);
 				 zPos -= Math.sin(yRad);
+				 
+				 if (xPos/teapotScale >= 7 && zPos/teapotScale >= 7
+						 && xPos/teapotScale <= 8 && zPos/teapotScale <= 8) {
+						xPos = 0;
+						zPos = 0;
+					}
 			 }
 			 break;
 			 
@@ -302,5 +316,64 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/**
+	 * Draws a 1x1xheight cube to represent a teleporter
+	 * 
+	 * @param gl
+	 * @param x The starting x-position of the teleporter
+	 * @param y The altitude at point x,z
+	 * @param z The starting z-position of the teleporter
+	 * @param height Height of the teleporter
+	 */
+	public void drawTeleport(GL2 gl, int x, double y, int z, int height){
+		
+		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+		float[] blue = {0.0f, 0.0f, 1.0f, 1.0f};
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, blue, 0);
+        float[] emiBlue = {0.0f, 0.0f, 0.4f, 1.0f};
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_EMISSION, emiBlue, 0);
+		
+        //Draw Portal Cube
+		gl.glBegin(GL2.GL_QUADS);
+		{
+			//Bottom
+			gl.glVertex3d(x, 0, z);
+			gl.glVertex3d(x, 0, z+1);
+			gl.glVertex3d(x+1, 0, z+1);
+			gl.glVertex3d(x+1, 0, z);
+			
+			//Top
+			gl.glVertex3d(x, y+height, z);
+			gl.glVertex3d(x, y+height, z+1);
+			gl.glVertex3d(x+1, y+height, z+1);
+			gl.glVertex3d(x+1, y+height, z);
+			
+			//North
+			gl.glVertex3d(x+1, 0, z);
+			gl.glVertex3d(x+1, y+height, z);
+			gl.glVertex3d(x+1, y+height, z+1);
+			gl.glVertex3d(x+1, 0, z+1);
+			
+			//South
+			gl.glVertex3d(x, 0, z);
+			gl.glVertex3d(x, 0, z+1);
+			gl.glVertex3d(x, y+height, z+1);
+			gl.glVertex3d(x, y+height, z);
+			
+			//West
+			gl.glVertex3d(x, 0, z);
+			gl.glVertex3d(x, y+height, z);
+			gl.glVertex3d(x+1, y+height, z);
+			gl.glVertex3d(x+1, 0, z);
+			
+			//East
+			gl.glVertex3d(x, 0, z+1);
+			gl.glVertex3d(x+1, 0, z+1);
+			gl.glVertex3d(x+1, y+height, z+1);
+			gl.glVertex3d(x, y+height, z+1);
+		}
+		gl.glEnd();
 	}
 }
