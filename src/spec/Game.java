@@ -153,12 +153,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glTranslated(-xPos,-(1+altitude*teapotScale),-zPos);
 		gl.glScaled(teapotScale, teapotScale, teapotScale);
 		
-		//Draw a teleporter
-		int teleX = 7;
-		int teleZ = 7;
-		double teleY = myTerrain.getGridAltitude(teleX, teleZ);
-		int teleHeight = 1;
-		drawTeleport(gl, teleX, teleY, teleZ, teleHeight);
+		//Draw a portal
+		int portalX = 7;
+		int portalZ = 7;
+		double portalY = myTerrain.getGridAltitude(portalX, portalZ);
+		int portalHeight = 1;
+		drawPortal(gl, portalX, portalY, portalZ, portalHeight);
 		
 		//Set texture modes
 		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
@@ -319,15 +319,15 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	}
 	
 	/**
-	 * Draws a 1x1xheight cube to represent a teleporter
+	 * Draws a 1x1xheight cube to represent a portal
 	 * 
 	 * @param gl
-	 * @param x The starting x-position of the teleporter
+	 * @param x The starting x-position of the portal
 	 * @param y The altitude at point x,z
-	 * @param z The starting z-position of the teleporter
-	 * @param height Height of the teleporter
+	 * @param z The starting z-position of the portal
+	 * @param height Height of the portal
 	 */
-	public void drawTeleport(GL2 gl, int x, double y, int z, int height){
+	public void drawPortal(GL2 gl, int x, double y, int z, int height){
 		
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 		float[] blue = {0.0f, 0.0f, 1.0f, 1.0f};
