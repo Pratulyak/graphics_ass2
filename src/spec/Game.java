@@ -196,6 +196,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
 		//Create ambient light (not pretty...)
         float[] amb = {0.2f, 0.2f, 0.2f, 1.0f};
+       
+        
         //gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, amb, 0);
         
         //float light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
