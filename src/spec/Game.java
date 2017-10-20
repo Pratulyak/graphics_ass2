@@ -165,13 +165,15 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     	myTextures = new MyTexture[NUM_TEXTURES];
     	myTextures[0] = new MyTexture(gl,"src/spec/grass.bmp",true);
 		// Texture of the leaf
-		myTextures[1] = new MyTexture(gl, leafTexture, true);
+		myTextures[2] = new MyTexture(gl, leafTexture, true);
 		// Texture of trunk
-		myTextures[2] = new MyTexture(gl, trunkTexture, true);
+		myTextures[1] = new MyTexture(gl, trunkTexture, true);
 		//texture of road
 		myTextures[3] = new MyTexture(gl, roadTexture, true);
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
+		Others temp = new Others();
+		temp.display(drawable);
 		gl.glEnable(GL2.GL_NORMALIZE);
 
 	}
