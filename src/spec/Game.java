@@ -35,7 +35,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	float[] emissionBlue = {0.0f, 0.0f, 0.4f, 1.0f};
 	float[] emissionOrange = {0.7f, 0.3f, 0.0f, 1.0f};
 	
-	private final int NUM_TEXTURES = 1;
+	private final int NUM_TEXTURES = 3;
 	private MyTexture myTextures[];
 	
 	//For rotation
