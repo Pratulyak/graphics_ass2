@@ -14,7 +14,7 @@ public class Tree {
 	private String leafTexture = "src/spec/leaves.png";
 	private String trunkTexture = "src/spec/tree_bark.png";
 	// Texture data
-	private MyTexture myTextures[] = new MyTexture[2];
+	//private MyTexture myTextures[] = new MyTexture[2];
 
 	public Tree(double x, double y, double z) {
 		myPos = new double[3];
@@ -28,23 +28,23 @@ public class Tree {
 		return myPos;
 	}
 
-	public void loadTextures(GL2 gl) {
+//	public void loadTextures(GL2 gl) {
 		// Texture of the leaf
-		myTextures[1] = new MyTexture(gl, leafTexture, true);
+	//	myTextures[1] = new MyTexture(gl, leafTexture, true);
 		// Texture of trunk
-		myTextures[0] = new MyTexture(gl, trunkTexture, true);
-	}
+		//myTextures[0] = new MyTexture(gl, trunkTexture, true);
+	//}
 
-	public void draw(GL2 gl, double height, double diameter, double leaves_radius) {
+	public void draw(GL2 gl, double height, double diameter, double leaves_radius,MyTexture myTextures[]) {
 		int slices = 100;
 		double y1 = 0;
 		double y2 = height;
-		this.loadTextures(gl);
+		//this.loadTextures(gl);
 
 		// texture for trunk
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[0].getTextureId());
+		gl.glBindTexture(GL2.GL_TEXTURE_2D,myTextures[1].getTextureId());
 
 		//bottom circle
 		gl.glBegin(GL2.GL_TRIANGLE_FAN);
@@ -95,19 +95,20 @@ public class Tree {
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[1].getTextureId());
+		gl.glBindTexture(GL2.GL_TEXTURE_2D,myTextures[2].getTextureId());
 
 		// Draw Spheres
 		gl.glPushMatrix();
-		gl.glTranslated(0, height, 0);
-		gl.glRotated(90, 1, 0, 0);
-		int stack = 20;
-		int slice = 20;
-		uvSphere(gl, leaves_radius, slice, stack, true);
+			gl.glTranslated(0, height, 0);
+			gl.glRotated(90, 1, 0, 0);
+			int stack = 20;
+			int slice = 20;
+			drawSphere(gl, leaves_radius, slice, stack, true);
 		gl.glPopMatrix();
+	
 	}
 
-	public static void uvSphere(GL2 gl, double radius, int slices, int stacks, boolean makeTexCoords) {
+	public static void drawSphere(GL2 gl, double radius, int slices, int stacks, boolean makeTexCoords) {
 		for (int j = 0; j < stacks; j++) {
 			double latitude1 = (Math.PI / stacks) * j - Math.PI / 2;
 			double latitude2 = (Math.PI / stacks) * (j + 1) - Math.PI / 2;

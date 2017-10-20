@@ -43,7 +43,7 @@ public class Objects {
 	float[] emissionOrange = { 0.7f, 0.3f, 0.0f, 1.0f };
 
 	public Objects(Objects o) {
-
+		
 	}
 
 	public Objects() {

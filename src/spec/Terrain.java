@@ -380,6 +380,7 @@ public class Terrain {
 	public void addTree(double x, double z) {
 		double y = altitude(x, z);
 		Tree tree = new Tree(x, y, z);
+		
 		myTrees.add(tree);
 	}
 
@@ -399,7 +400,7 @@ public class Terrain {
 	 * 
 	 * @param gl
 	 */
-	public void drawTerrain(GL2 gl) {
+	public void drawTerrain(GL2 gl,MyTexture myTextures[]) {
 		// Draw the terrain from here?
 		gl.glBegin(GL2.GL_TRIANGLES);
 		{
@@ -442,7 +443,7 @@ public class Terrain {
 		gl.glEnd();
 		
 		for (Road r: this.myRoads){
-			r.draw(gl);
+			r.draw(gl,myTextures);
 		}
 
 		for (Tree t : this.myTrees) {
@@ -454,9 +455,9 @@ public class Terrain {
 			double height_tree = 1.0;
 			double diameter_tree = 0.1;
 			double diameter_leaves = 0.4;
-			
+			//t.loadTextures(gl);
 			gl.glTranslated(x, y, z);
-			t.draw(gl, height_tree, diameter_tree, diameter_leaves);
+			t.draw(gl, height_tree, diameter_tree, diameter_leaves,myTextures);
 			gl.glPopMatrix();
 		}
 	}

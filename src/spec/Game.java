@@ -34,8 +34,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	float[] emissionBlue = {0.0f, 0.0f, 0.4f, 1.0f};
 	float[] emissionOrange = {0.7f, 0.3f, 0.0f, 1.0f};
 	
-	private final int NUM_TEXTURES = 3;
+	private final int NUM_TEXTURES = 4;
 	private MyTexture myTextures[];
+	// Texture file information
+	private String leafTexture = "src/spec/leaves.png";
+	private String trunkTexture = "src/spec/tree_bark.png";
+	private String roadTexture = "src/spec/road4.png";
+
 	
 	//Portal positions
 	int portal1X = 0;
@@ -118,7 +123,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[0].getTextureId());
 		
 		//Draw the terrain
-		myTerrain.drawTerrain(gl);
+		myTerrain.drawTerrain(gl,this.myTextures);
 
 	}
 
@@ -159,7 +164,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		//Load in textures from files
     	myTextures = new MyTexture[NUM_TEXTURES];
     	myTextures[0] = new MyTexture(gl,"src/spec/grass.bmp",true);
-
+		// Texture of the leaf
+		myTextures[1] = new MyTexture(gl, leafTexture, true);
+		// Texture of trunk
+		myTextures[2] = new MyTexture(gl, trunkTexture, true);
+		//texture of road
+		myTextures[3] = new MyTexture(gl, roadTexture, true);
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
 		gl.glEnable(GL2.GL_NORMALIZE);
