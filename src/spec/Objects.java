@@ -14,21 +14,13 @@ public class Objects {
 	private double xTea = 1;
 	private double yTea = 0;
 	private double zTea = 1;
+	private double altitude = 0;
 	
 	private double speed = 0.2;
 
 	private double Xangle = 0;
 	private double Yangle = 0;
 	private double Zangle = 0;
-	
-	//Variables for the camera view
-	public boolean thirdPersonView = true;
-	private double eyeX = 0;
-	private double eyeY = 0;
-	private double eyeZ = 0;
-	private double centerX = 0;
-	private double centerY = 0;
-	private double centerZ = 0;
 
 	// Colors
 	float[] colorRed = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -89,37 +81,17 @@ public class Objects {
 		return speed;
 	}
 	
+	public double getAltitude() {
+		return altitude;
+	}
+	
 	public void drawTeapot(GL2 gl, Terrain myTerrain, double scale) {
 		
 		//Turn off texture
         gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
        
         //Get the altitude of the terrain at the teapot's current location
-        double altitude;
         altitude = myTerrain.altitude(getXtea(), getZtea());
-		
-		//Camera that follows the teapot (3rd person view)
-		GLU glu = new GLU();
-		
-		//Setting camera coordinates according to the view mode
-		if (thirdPersonView) {
-			eyeX = xTea-3;
-			eyeY = (2 + altitude);
-			eyeZ = zTea;
-			centerX = xTea+1;
-			centerY = altitude;
-			centerZ = zTea;
-		} else {
-			eyeX = xTea+0.2;
-			eyeY = altitude;
-			eyeZ = zTea;
-			centerX = xTea+2;
-			centerY = altitude;
-			centerZ = zTea;
-		}
-		
-		//gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
-		glu.gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
         
         //Set color to the teapot
         float[] red = {1.0f, 0.0f, 0.0f, 1.0f};

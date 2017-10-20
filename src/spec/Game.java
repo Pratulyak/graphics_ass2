@@ -21,6 +21,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
 	private Terrain myTerrain;
 	private Objects objects;
+	private Camera camera;
 	
 	//Colors
 	float[] colorRed = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -47,11 +48,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	int portal1Z = 0;
 	int portal2X = 0;
 	int portal2Z = 0;
+	private boolean portals = true;
 
 	public Game(Terrain terrain) {
 		super("Assignment 2");
 		myTerrain = terrain;
 		objects = new Objects();
+		camera = new Camera();
 	}
 
 	/**
@@ -98,22 +101,27 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		
+		//Update camera
+		camera.updateCamera(objects);
+		
 		//Draw the teapot
 		objects.drawTeapot(gl, myTerrain, 0.2);
 		
-		//Draw portal 1
-		portal1X = 3;
-		portal1Z = 7;
-		double portal1Y = myTerrain.getGridAltitude(portal1X, portal1Z);
-		int portal1Height = 1;
-		objects.drawPortal(gl, portal1X, portal1Y, portal1Z, portal1Height, colorBlue, emissionBlue);
-		
-		//Draw portal 2
-		portal2X = 6;
-		portal2Z = 1;
-		double portal2Y = myTerrain.getGridAltitude(portal2X, portal2Z);
-		int portal2Height = 1;
-		objects.drawPortal(gl, portal2X, portal2Y, portal2Z, portal2Height, colorOrange, emissionOrange);
+		if (portals) {
+			//Draw portal 1
+			portal1X = 3;
+			portal1Z = 7;
+			double portal1Y = myTerrain.getGridAltitude(portal1X, portal1Z);
+			int portal1Height = 1;
+			objects.drawPortal(gl, portal1X, portal1Y, portal1Z, portal1Height, colorBlue, emissionBlue);
+			
+			//Draw portal 2
+			portal2X = 6;
+			portal2Z = 1;
+			double portal2Y = myTerrain.getGridAltitude(portal2X, portal2Z);
+			int portal2Height = 1;
+			objects.drawPortal(gl, portal2X, portal2Y, portal2Z, portal2Height, colorOrange, emissionOrange);
+		}
 		
 		//Set texture modes
 		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
@@ -148,15 +156,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glEnable(GL2.GL_LIGHT0);
 		
 		//Position the light source (the sun). The last zero in 'dir' represent direction
-		float[] dir = {5, 10, 3, 0};
+		float[] dir = myTerrain.getSunlight();
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, dir, 0);
-		
-		//Create ambient light (not pretty...)
-        float[] amb = {0.2f, 0.2f, 0.2f, 1.0f};
-        //gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, amb, 0);
-        
-        //float light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        //gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, light_ambient);
 		
 		//Enable texturing
 		gl.glEnable(GL2.GL_TEXTURE_2D);
@@ -226,7 +227,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				
 				//If avatar goes through portal 1, change location to portal 2
 				if (x >= portal1X && z >= portal1Z
-						&& x <= portal1X+0.3 && z <= portal1Z+1) {
+						&& x <= portal1X+0.3 && z <= portal1Z+1 && portals) {
 					
 					//Set new x position of teapot to be xPos of portal + a few steps to avoid loop. 
 					//The math is there to get the correct direction when going out of the portal
@@ -239,7 +240,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				
 				//If avatar goes through portal 2, change location to portal 1
 				if (x >= portal2X && z >= portal2Z
-						&& x <= portal2X+0.3 && z <= portal2Z+1) {
+						&& x <= portal2X+0.3 && z <= portal2Z+1 && portals) {
 					
 					objects.setXtea( portal1X + (Math.cos(yRad)*0.3) );
 					objects.setZtea( portal1Z + 0.5);
@@ -263,7 +264,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 				 
 				//If avatar goes through portal 1, change location to portal 2
 				 if (x >= portal1X && z >= portal1Z
-							&& x <= portal1X+0.3 && z <= portal1Z+1) {
+							&& x <= portal1X+0.3 && z <= portal1Z+1 && portals) {
 					 
 						objects.setXtea( portal2X - (Math.cos(yRad)*0.3) );
 						objects.setZtea( portal2Z + 0.5 );
@@ -271,7 +272,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 					
 				//If avatar goes through portal 2, change location to portal 1
 					if (x >= portal2X &&  z >= portal2Z
-							&& x <= portal2X+0.3 && z <= portal2Z+1) {
+							&& x <= portal2X+0.3 && z <= portal2Z+1 && portals) {
 						
 						objects.setXtea( portal1X - (Math.cos(yRad)*0.3) );
 						objects.setZtea( portal1Z + 0.5 );
@@ -293,7 +294,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 			 
 			 //Press V to change from 1st to 3rd person view
 		 case KeyEvent.VK_V:
-			 objects.thirdPersonView = !objects.thirdPersonView;
+			 camera.thirdPersonView = !camera.thirdPersonView;
+			 break;
+			 
+			 //Press P to show/hide portals
+		 case KeyEvent.VK_P:
+			 portals = !portals;
 			 break;
 		}
 
