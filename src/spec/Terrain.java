@@ -442,8 +442,6 @@ public class Terrain {
 		gl.glEnd();
 		
 		for (Road r: this.myRoads){
-			double[] location = r.point(0);
-			//double height = this.altitude(location[0], location[1]);
 			r.draw(gl);
 		}
 
@@ -452,9 +450,11 @@ public class Terrain {
 			double x = t.getPosition()[0];
 			double y = t.getPosition()[1];
 			double z = t.getPosition()[2];
+			
 			double height_tree = 1.0;
 			double diameter_tree = 0.1;
 			double diameter_leaves = 0.4;
+			
 			gl.glTranslated(x, y, z);
 			t.draw(gl, height_tree, diameter_tree, diameter_leaves);
 			gl.glPopMatrix();

@@ -16,7 +16,7 @@ public class Road {
 	private double myWidth;
 	// texture data
 	private MyTexture myTextures[] = new MyTexture[1];
-	private String roadTexture = "src/spec/road3.png";
+	private String roadTexture = "src/spec/road4.png";
 
 	/**
 	 * Create a new road starting at the specified point
@@ -166,21 +166,22 @@ public class Road {
 
 		double width = this.width();
 
-		for (double t = 0.02; t < this.size() - 0.01; t += 0.01) {
+		for (double flag = 0.02; flag < this.size() - 0.01; flag += 0.01) {
 			gl.glPushMatrix();
 
-			double p0[] = this.point(t);
-			double p1[] = this.point(t + 0.01);
-			double a = Math.toDegrees(Math.atan(Math.abs((p1[1] - p0[1]) / (p1[0] - p0[0]))));
-
-			gl.glTranslated(p0[0], Terrain.altitude(p0[0], p0[1]) + 0.02, p0[1]);
-			gl.glRotated(a, 0, 1, 0);
-
+			double point[] = this.point(flag);
+			double point1[] = this.point(flag + 0.01);
+			
+			double angle = Math.toDegrees(Math.atan(Math.abs((point1[1] - point[1]) / (point1[0] - point[0]))));
+			
+			double altitude = Terrain.altitude(point[0], point[1]) + 0.02;
+			gl.glTranslated(point[0],altitude , point[1]);
+			gl.glRotated(angle, 0, 1, 0);
+			//countercw ordered quads drawn according to width
 			gl.glBegin(GL2.GL_QUADS);
-
 			gl.glNormal3d(0, 1, 0);
 
-			gl.glTexCoord2d(0, 0);
+			gl.glTexCoord2d(0, 0);//texture coordinates to draw
 			gl.glVertex3d(0, 0, -width / 2);
 			
 			gl.glTexCoord2d(0, width / 2);
