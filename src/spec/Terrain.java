@@ -14,7 +14,7 @@ import com.jogamp.opengl.GL2;
 public class Terrain {
 
 	private Dimension mySize;
-	private double[][] myAltitude;
+	private static double[][] myAltitude;
 	private List<Tree> myTrees;
 	private List<Road> myRoads;
 	private float[] mySunlight;
@@ -302,7 +302,7 @@ public class Terrain {
 	 * @param z
 	 * @return
 	 */
-	public double altitude(double x, double z) {
+	public static double altitude(double x, double z) {
 
 		// In case we have a double with .0
 		x += 0.01;
@@ -440,6 +440,12 @@ public class Terrain {
 			}
 		}
 		gl.glEnd();
+		
+		for (Road r: this.myRoads){
+			double[] location = r.point(0);
+			//double height = this.altitude(location[0], location[1]);
+			r.draw(gl);
+		}
 
 		for (Tree t : this.myTrees) {
 			gl.glPushMatrix();
