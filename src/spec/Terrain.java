@@ -185,13 +185,13 @@ public class Terrain {
 			double[] V1 = vertexList[p1];
 			double[] V0 = vertexList[p0];
 
-			// v1 = V3 - V1
+			// v1 = V2 - V0
 			double[] v1 = { V2[0] - V0[0], V2[1] - V0[1], V2[2] - V0[2] };
 
-			// v2 = p2 - p1
+			// v2 = V1 - V0
 			double[] v2 = { V1[0] - V0[0], V1[1] - V0[1], V1[2] - V0[2] };
 
-			// Cross product of v1 and v1
+			// Cross product of v1 and v2
 			double[] v1xv2 = { v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2],
 					v1[0] * v2[1] - v1[1] * v2[0] };
 
