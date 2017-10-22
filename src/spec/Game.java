@@ -22,7 +22,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private Terrain myTerrain;
 	private Objects objects;
 	private Camera camera;
-	
+	private Others others;
 	//Colors
 	float[] colorRed = {1.0f, 0.0f, 0.0f, 1.0f};
 	float[] colorGreen = {0.0f, 1.0f, 0.0f, 1.0f};
@@ -173,9 +173,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		myTextures[3] = new MyTexture(gl, roadTexture, true);
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
-		Others temp = new Others();
-		temp.display(drawable);
+		this.others = new Others();
+		this.others.display(drawable);
+		
 		gl.glEnable(GL2.GL_NORMALIZE);
+		
 
 	}
 
