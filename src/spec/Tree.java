@@ -10,11 +10,6 @@ import com.jogamp.opengl.GL2;
 public class Tree {
 
 	private double[] myPos;
-	// Texture file information
-	private String leafTexture = "src/spec/leaves.png";
-	private String trunkTexture = "src/spec/tree_bark.png";
-	// Texture data
-	//private MyTexture myTextures[] = new MyTexture[2];
 
 	public Tree(double x, double y, double z) {
 		myPos = new double[3];
@@ -27,13 +22,6 @@ public class Tree {
 	public double[] getPosition() {
 		return myPos;
 	}
-
-//	public void loadTextures(GL2 gl) {
-		// Texture of the leaf
-	//	myTextures[1] = new MyTexture(gl, leafTexture, true);
-		// Texture of trunk
-		//myTextures[0] = new MyTexture(gl, trunkTexture, true);
-	//}
 
 	public void draw(GL2 gl, double height, double diameter, double leaves_radius,MyTexture myTextures[]) {
 		int slices = 100;
@@ -116,6 +104,7 @@ public class Tree {
 			double cosLat1 = Math.cos(latitude1);
 			double sinLat2 = Math.sin(latitude2);
 			double cosLat2 = Math.cos(latitude2);
+			//starts drawing Quads to represent a spere which should be leaves
 			gl.glBegin(GL2.GL_QUAD_STRIP);
 			for (int i = 0; i <= slices; i++) {
 				double longitude = (2 * Math.PI / slices) * i;

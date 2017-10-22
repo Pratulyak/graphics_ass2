@@ -152,17 +152,10 @@ public class Road {
 		throw new IllegalArgumentException("" + i);
 	}
 
-//	public void loadTextures(GL2 gl) {
-		// texture of road
-	//private String roadTexture = "src/spec/road4.png";
-	//	myTextures[0] = new MyTexture(gl, roadTexture, true);
-	//}
-
 	public void draw(GL2 gl ,MyTexture myTextures[]) {
 		gl.glDisable(GL2.GL_TEXTURE_2D);
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 		gl.glEnable(GL2.GL_TEXTURE_2D);
-		//this.loadTextures(gl);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, myTextures[3].getTextureId());
 
 		double width = this.width();
@@ -174,7 +167,7 @@ public class Road {
 			double point1[] = this.point(flag + 0.01);
 			
 			double angle = Math.toDegrees(Math.atan(Math.abs((point1[1] - point[1]) / (point1[0] - point[0]))));
-			
+			//gets altitude
 			double altitude = Terrain.altitude(point[0], point[1]) + 0.02;
 			gl.glTranslated(point[0],altitude , point[1]);
 			gl.glRotated(angle, 0, 1, 0);

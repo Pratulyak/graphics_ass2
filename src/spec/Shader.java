@@ -16,7 +16,8 @@ import com.jogamp.opengl.GL2ES2;
  */
 public class Shader {
 
-    static public class CompilationException extends RuntimeException {
+    @SuppressWarnings("serial")
+	static public class CompilationException extends RuntimeException {
 
         public CompilationException(String message) {
             super(message);
