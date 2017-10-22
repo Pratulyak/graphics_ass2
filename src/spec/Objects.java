@@ -85,13 +85,15 @@ public class Objects {
 		return altitude;
 	}
 	
-	public void drawTeapot(GL2 gl, Terrain myTerrain, double scale) {
+	public void drawTeapot(GL2 gl, Terrain myTerrain, double scale,Camera camera) {
 		
 		//Turn off texture
         gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
        
         //Get the altitude of the terrain at the teapot's current location
         altitude = myTerrain.altitude(getXtea(), getZtea());
+        
+        camera.updateCamera(this);
         
         //Set color to the teapot
         float[] red = {1.0f, 0.0f, 0.0f, 1.0f};

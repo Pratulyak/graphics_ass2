@@ -26,7 +26,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private Objects objects;
 	private Camera camera;
 	@SuppressWarnings("unused")
-	private Others others;
+	//private Others others;
 	//Colors
 	float[] colorRed = {1.0f, 0.0f, 0.0f, 1.0f};
 	float[] colorGreen = {0.0f, 1.0f, 0.0f, 1.0f};
@@ -106,10 +106,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		gl.glLoadIdentity();
 		
 		//Update camera
-		camera.updateCamera(objects);
+		//camera.updateCamera(objects);
 		
 		//Draw the teapot
-		objects.drawTeapot(gl, myTerrain, 0.2);
+		objects.drawTeapot(gl, myTerrain, 0.2,camera);
 		
 		if (portals) {
 			//Draw portal 1
@@ -180,7 +180,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
 		gl.glEnable(GL2.GL_NORMALIZE);
-		this.others = new Others();
+		//this.others = new Others();
 		//this.others.display(drawable);
 		
 
