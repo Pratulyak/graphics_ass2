@@ -10,7 +10,6 @@ import com.jogamp.opengl.glu.GLU;
 
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
  * COMMENT: Comment Game
@@ -19,9 +18,14 @@ import com.jogamp.opengl.util.gl2.GLUT;
  */
 public class Game extends JFrame implements GLEventListener, KeyListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Terrain myTerrain;
 	private Objects objects;
 	private Camera camera;
+	@SuppressWarnings("unused")
 	private Others others;
 	//Colors
 	float[] colorRed = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -144,6 +148,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
+		
 		// If you do not add this line
 		// opengl will draw things in the order you
 		// draw them in your program
@@ -171,12 +176,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		myTextures[1] = new MyTexture(gl, trunkTexture, true);
 		//texture of road
 		myTextures[3] = new MyTexture(gl, roadTexture, true);
+		
 		// normalise normals (!)
 		// this is necessary to make lighting work properly
-		this.others = new Others();
-		this.others.display(drawable);
-		
 		gl.glEnable(GL2.GL_NORMALIZE);
+		this.others = new Others();
+		//this.others.display(drawable);
 		
 
 	}

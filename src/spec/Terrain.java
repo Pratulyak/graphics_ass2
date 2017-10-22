@@ -453,9 +453,9 @@ public class Terrain {
 			double z = t.getPosition()[2];
 			
 			double height_tree = 1.0;
-			double diameter_tree = 0.1;
-			double diameter_leaves = 0.4;
-			//t.loadTextures(gl);
+			double diameter_tree = 0.1;//pre-defined sizes to draw trees in proportion
+			double diameter_leaves = 0.4;//same as above
+			
 			gl.glTranslated(x, y, z);
 			t.draw(gl, height_tree, diameter_tree, diameter_leaves,myTextures);
 			gl.glPopMatrix();
