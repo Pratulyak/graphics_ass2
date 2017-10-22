@@ -14,6 +14,9 @@ P: Portal Controls
 Files:
 
 Game.java: Main engine
+
 Objects.java: Contains Portal and Avatar implementation
+
 Camera.java: implementation for Camera
+
 Terrain.java: contains all the terrain drawing and rendering implementation
